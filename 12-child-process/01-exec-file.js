@@ -2,11 +2,12 @@
 
 const cp = require('child_process');
 
-cp.execFile('catabc',['-n','01-exec-file.js'],function(err,out,error){
-  if(err){
-    console.log(error.message);
-    process.exit(1);
-  }
-  console.log(out);
-  
+console.log('I am father process. PID:', process.pid);
+console.log('cat 01-exec-file.js\n');
+
+cp.execFile('cat', ['01-exec-file.js'], (err, stdout) => {
+    if(err) console.error(err);
+
+      console.log(stdout);
+
 });
