@@ -212,6 +212,14 @@
 </body>
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 <script>
-   
+    $(document).ready(function() {
+        $.get("http://localhost:8083/vlist", function(data) {
+            var arr=JSON.parse(data);
+            for(var i=0;i<arr.length;i++){
+                $("tr")[i+1].children[0].innerText = arr[i].chapterId;
+                $("tr")[i+1].children[1].innerText = arr[i].chapterName;
+            }
+        })
+    })
 </script>
 </html>
