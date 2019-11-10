@@ -81,40 +81,25 @@ http.createServer((req,res)=>{
       break;
   }
   //文章列表chapterlist
-  if(req.url =='/list/'){
+  if(req.url =="/list/"){
    fs.readFile("../chapterList.html",function(err,data){
       res.writeHead(200,{"Content-type":"text/html;charset=UTF-8"});
       res.end(data);
    });
-  }
-  // else if(req.url == "/detail"){
-  //     if(req.url == '/detail?chapterId='+req.data){
-  //       fs.readFile("../chapter.html",function(err,data){
-  //           res.writeHead(200,{"Content-Type":"text/html;charset=utf-8"});
-  //           res.end(data);
-  //       });
-  //   }   
-  //   //获取博客列表
-  //   else if(req.url == '/getChapterList'){
-  //       // res.writeHead(200, {'Content-Type': 'text/html'});
-  //       var str = JSON.stringify(chapterList);
-  //       res.end(str);
-  //   }
-  //   //获得详情
-  //   else if(req.url == '/getDetail'){
-  //       var chapterId = qs.parse(urlObj.query).chapterId;
-  //       var dataList = [];
-  //       chapterList.forEach((data,index) => {
-  //           if(data.chapterId == chapterId){
-  //               dataList.push(data);
-  //           }
-  //       })
-  //       res.writeHead(200,{'Content-Type':'application/json'});
-  //       var str = JSON.stringify(dataList);
-  //       res.end(str);
-  //   }
-  // }
-  //登录跳转
+  }//文章详情
+  else if(path === "/detail"){
+    var id = url.parse(req.url).query.split('=')[1]-1;
+    var chid = JSON.stringify(chapterList[id]);
+    res.writeHead(200, {
+        'Content-Length': Buffer.byteLength(chid),
+        'Content-Type': 'text/plain;charset="utf-8"'
+    })
+    res.end(chid);
+    // fs.readFile("../chapter.html",function(err,data){
+    //   res.writeHead(200,{"Content-type":"Buffer.byteLength(chid),charset=UTF-8"});
+    //   res.end(chid);
+    // });JSON.stringify(chid)
+  }//登录跳转
   else if (req.url == "/login/"){
     fs.readFile("../login.html",function(err,data){
       res.writeHead(200,{"Content-type":"text/html;charset=UTF-8"});
@@ -139,23 +124,26 @@ http.createServer((req,res)=>{
   }
 
 //用户admin登录
-  if(req.url==='/userlogin'){
-    req.on('data',function(data){
-        var data1 = qs.parse(data.toString('utf8'));
-        //管理员账号列表循环
-        for(var i = 0;i<userList.length;i++){
-          if(data1.username===userList[i].username || data1.pwd===userList[i].pwd){
-            res.end();
-          }else{
-            res.writeHead(200,{"Content-Type":"text/html;charset=utf-8"});
-            res.end('用户名或密码错误!');
-          }
+  if(req.url==="/userlogin"){
+    var data0 = '';
+    req.on('data', function (data) {
+        data0 += data;
+    })
+    req.on('end', function () {
+      //管理员账号密码列表
+      for(var i = 0;i<userList.length;i++){
+        if (JSON.parse(data0).username === userList[i].username && JSON.parse(data0).pwd === userList[i].pwd) {
+          res.writeHead(200, {"Content-Type": "text/plain"});
         }
-    });
+        else {
+          res.statusCode = 404;
+        }
+      }
+    })
   }
 
-  //添加
-  if(req.url==='/add'){
+  //添加文章
+  if(req.url==="/add"){
     req.on('data',function(data){
       let data0 = data.toString('utf8');
       var obj = qs.parse(data0);
@@ -171,7 +159,7 @@ http.createServer((req,res)=>{
       res.end();
   }
 
-//文章id，title列表list
+//文章列表listmanager
   if(req.url==="/vlist"){
       var list = JSON.stringify(chapterList);
       res.write(list);

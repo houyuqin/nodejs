@@ -212,6 +212,14 @@
 </body>
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 <script>
+    function showList() {
+        window.location = "http://localhost:8083/listmanager/"
+    }
+    
+    function addChapter() {
+        window.location = "http://localhost:8083/addChapter/"
+    }
+
     $(document).ready(function() {
         $.get("http://localhost:8083/vlist", function(data) {
             var arr=JSON.parse(data);
